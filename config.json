@@ -1,0 +1,41 @@
+{
+    "effect": 45,
+    "brightness": 200,
+    "speed": 150,
+    "stripes": [
+        {
+            "length": 10,
+            "direction": 1
+        },
+        {
+            "length": 10,
+            "direction": 1
+        }
+    ],
+    "palette": "fire",
+    "activated": true,
+    "transition": 7,
+    "playlist_playing": "Rave",
+    "lesk_connections": [
+        {
+            "name": "lesk 2"
+        },
+        {
+            "name": "lesk 3"
+        },
+        {
+            "name": "lesk 4"
+        },
+        {
+            "name": "lesk 5"
+        }
+    ],
+    "router_connection": {
+        "enabled": true,
+        "wifi_name": "test",
+        "password": "test"
+    },
+    "controller_connection": {
+        "enabled": false
+    }
+}
