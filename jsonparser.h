@@ -8,9 +8,9 @@
 class JSONParser {
 
     public:
-        JSONParser(const char* file);
+        JSONParser(const char* path);
 
-        // char* getEffectName();
+        // The get methods
         int getEffectNumber();
         int getBrightness();
         int getSpeed();
@@ -19,47 +19,46 @@ class JSONParser {
         int getTransition();
         const char* getPlaylist();
 
-        const char* getRouterConnections();
+        bool isRouterConnectionEnabled();
+        const char* getRouterSSID();
+        const char* getRouterPassword();
+
+        bool isControllerConnected();
+        const char* getControllerName();
+
+        int getNumberOfStripes();
+        int getNumberOfLeskConnections();
 
 
+        // The set methods
+        // Set single values
+        void setEffectNumber(int effectNumber);
+        void setBrightness(int brightness);
+        void setSpeed(int speed);
+        void setPalette(const char* palette);
+        void setActivated(bool activated);
+        void setTransition(int transition);
+        void setPlaylist(const char* playlist);
+
+        void setRouterConnectionEnabled(bool enabled);
+        void setRouterSSID(const char* ssid);
+        void setRouterPassword(const char* password);
+
+        void setControllerConnectionEnabled(bool enabled);
+        void setControllerName(const char* name);
+
+        // Set multiple values
+
+
+        
 
     
     private:
+        // Need to change depending on the way of writing to a file
+        void writeOnDoc(const char* path);
         JsonDocument doc;
+        const char * path;
 
 };
 
 #endif
-
-    // "stripes": [
-    //     {
-    //         "length": 10,
-    //         "direction": 1
-    //     },
-    //     {
-    //         "length": 10,
-    //         "direction": 1
-    //     }
-    // ],
-    // "lesk_connections": [
-    //     {
-    //         "name": "lesk 2"
-    //     },
-    //     {
-    //         "name": "lesk 3"
-    //     },
-    //     {
-    //         "name": "lesk 4"
-    //     },
-    //     {
-    //         "name": "lesk 5"
-    //     }
-    // ],
-    // "router_connection": {
-    //     "enabled": true,
-    //     "wifi_name": "test",
-    //     "password": "test"
-    // },
-    // "controller_connection": {
-    //     "enabled": false
-    // }

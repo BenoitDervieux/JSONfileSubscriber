@@ -13,9 +13,15 @@ int main() {
     std::cout << "Activated: " << parser.getActivated() << std::endl;
     std::cout << "Transition: " << parser.getTransition() << std::endl;
     std::cout << "Playlist: " << parser.getPlaylist() << std::endl;
+    std::cout << "Connection Enabled : " << parser.isRouterConnectionEnabled() << std::endl;
+    std::cout << "Router SSID : " << parser.getRouterSSID() << std::endl;
+    std::cout << "Router password : " << parser.getRouterPassword() << std::endl;
+    std::cout << "Is controller connected : " << parser.isControllerConnected() << std::endl;
+    std::cout << "Name controller : " << parser.getControllerName() << std::endl;
+    std::cout << "Nunber of stripes : " << parser.getNumberOfStripes() << std::endl;
+    std::cout << "Number of lesk connections : " << parser.getNumberOfLeskConnections() << std::endl;
 
-    std::cout << "Router connections: " << parser.getRouterConnections() << std::endl;
-
+    parser.setEffectNumber(1);
 
    return 0;
 }
