@@ -2,9 +2,6 @@
 #include <ArduinoJson.h>
 #include "jsonparser.h"
 #include "ESPAsyncWebServer.h"
-
-
-
 #include "../.variables/variables.h" //Modify path according to your need
 // #include "putvariables.h"
 
@@ -38,6 +35,10 @@ void setup() {
   // Route to load style.css file
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/style.css", "text/css");
+  });
+
+  server.on("/", HTTP_POST, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, "/index.html", "text/html");
   });
 
   JSONParser parser = JSONParser("config.json");
