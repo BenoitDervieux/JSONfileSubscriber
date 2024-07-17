@@ -1,22 +1,38 @@
 #include "jsonparser.h"
 
-JSONParser::JSONParser(const char* path) {
+JSONParser::JSONParser() {
     // TODO
+    
+}
+
+void JSONParser::AdvanceAndUpdateAll() {
+    static int num_updates = 0;
+    char buffer[20];
+    sprintf(buffer, "%d", ++num_updates);
+    std::string str(buffer);
+    _latest_message = "Update Number \"";
+    _latest_message += str;
+    _latest_message += "\" Processed";
+    Notify();
+}
+
+void JSONParser::setup(const char* path) {
     this->path = path;
-      // Initialize SPIFFS
+    // Initialize SPIFFS
     if(!SPIFFS.begin(true)){
         Serial.println("An Error has occurred while mounting SPIFFS");
         return ;
     }
-    fs::File filep = SPIFFS.open(path, "r");
+    File filep = SPIFFS.open(path, "r");
     if (!filep) {
         Serial.println("Failed to open file");
         return;
     }
 
     size_t filesize = filep.size();
-    // Serial.println("File size: " + String(filesize));
+    Serial.println("File size: " + String(filesize));
     char* buffer = (char*) malloc(sizeof(char) * filesize + 1);
+    char* bufferStart = buffer;
     int size = 0;
     char c;
      while (filep.available()) {
@@ -24,6 +40,7 @@ JSONParser::JSONParser(const char* path) {
         buffer[size] = c;
         size++;
     }
+    buffer[size] = '\0';
 
     DeserializationError error = deserializeJson(this->doc, buffer);
     if (error) {
@@ -33,7 +50,28 @@ JSONParser::JSONParser(const char* path) {
 
     // Close the file (optional, but a good practice)
     filep.close();
-    free(buffer);
+    free(bufferStart);
+}
+
+void JSONParser::printDoc() {
+    int size = measureJson(this->doc);
+    printf("size of JSON: %d\n", size);
+    char* buffer = (char*) malloc(sizeof(char) * size + 1);
+    if( buffer == nullptr ) {
+        Serial.println("malloc failed");
+        return ;
+    }
+
+    serializeJson(this->doc, buffer, size + 1);
+    buffer[size] = '\0';
+    char* bufferStart = buffer;
+
+    while (*buffer != '\0') {
+        printf("%c", *buffer);
+        buffer++;
+    }
+    printf("\n");
+    free(bufferStart);
 }
 
 int JSONParser::getEffectNumber() {
@@ -122,6 +160,27 @@ void JSONParser::setEffectNumber(int effectNumber) {
     writeOnDoc(this->path);
 }
 
+void JSONParser::increaseEffectNumber() {
+    int effect = getEffectNumber();
+    effect = (effect + 1) % 256;
+    doc["effect"] = effect + 1;
+    Serial.print("The effect is now : ");
+    Serial.println(effect);
+    Notify();
+    // writeOnDoc(this->path);
+}
+
+void JSONParser::decreaseEffectNumber() {
+    int effect = getEffectNumber();
+    effect--;
+    if(effect < 0) effect = 255;
+    doc["effect"] = effect;
+    Serial.print("The effect is now : ");
+    Serial.println(effect);
+    Notify();
+    // writeOnDoc(this->path);
+}
+
 void JSONParser::setBrightness(int brightness) {
     this->doc["brightness"] = brightness;
     writeOnDoc(this->path);
@@ -189,7 +248,7 @@ void JSONParser::setControllerName(const char* name) {
 
 }
 
-void JSONParser::writeOnDoc(const char* path) {
+void JSONParser::writeOnDoc(const char* path) const {
 
     int size = measureJson(this->doc);
     printf("size of JSON: %d\n", size);

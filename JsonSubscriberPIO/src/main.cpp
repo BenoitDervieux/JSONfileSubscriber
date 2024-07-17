@@ -3,16 +3,22 @@
 #include "jsonparser.h"
 #include "ESPAsyncWebServer.h"
 #include "../.variables/variables.h" //Modify path according to your need
-// #include "putvariables.h"
+#include "systemExample.h"
 
 const char* ssid; 
 const char* password;
 
 AsyncWebServer server(80);
+JSONParser parser = JSONParser();
+SystemExample systemExample;
+
+
 
 void setup() {
-
   Serial.begin(9600);
+  parser.setup("/config.json");
+  parser.Add(&systemExample);
+  // JSONParser parser = JSONParser("/config.json");
 
   const char* ssid = SSID; //Enter your WiFi Name here
   const char* password = SSID_PASSWORD; // Enter your WiFi Password here
@@ -36,12 +42,30 @@ void setup() {
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(SPIFFS, "/style.css", "text/css");
   });
-
+  
   server.on("/", HTTP_POST, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, "/index.html", "text/html");
-  });
+        Serial.println("Received POST request");
+        Serial.println(request->args());
+        int params = request->params();
+        for(int i = 0; i < params; i++){
+            AsyncWebParameter* p = request->getParam(i);
+            Serial.print("POST ");
+            Serial.print(p->name());
+            Serial.print(": ");
+            Serial.println(p->value());
+            if(strcmp(p->value().c_str(), "effectPlusPlus") == 0) {
+                parser.increaseEffectNumber();
+            }
+            if(strcmp(p->value().c_str(), "effectMoinsMoins") == 0) {
+                parser.decreaseEffectNumber();
+            }
+        }
+        request->send(200, "text/plain", "Effect supposed to change ");
+    });
 
-  JSONParser parser = JSONParser("config.json");
+
+  // Start server
+  server.begin();
  
 }
 
